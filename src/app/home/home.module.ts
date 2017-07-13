@@ -9,7 +9,7 @@ import { AuthGuard } from './../common/auth.guard';
 
 // Page Components
 import { DashboardComponent } from "./dashboard.component";
-import { ToolsComponent } from "./tools.component";
+import { RecruitersComponent } from "./recruiters.component";
 import { ReportsComponent } from "./reports.component";
 
 
@@ -25,13 +25,13 @@ import { ChannelPartnersService } from './../services/channel-partners.service';
 import { HomeRoutingModule } from './home-routing.module';
 
 // PrimeNG Components
-import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableModule }  from 'primeng/primeng';
+import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableModule, ChartModule }  from 'primeng/primeng';
 
 
 @NgModule({
   declarations: [
 	DashboardComponent,
-	ToolsComponent,
+	RecruitersComponent,
 	ReportsComponent,
 	ReportsSidebarComponent
   ],
@@ -39,6 +39,7 @@ import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableMo
     BrowserModule,
     BrowserAnimationsModule,
     ButtonModule,
+	ChartModule,
 	DataTableModule,
     FormsModule,
 	GrowlModule,
@@ -47,7 +48,7 @@ import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableMo
     PasswordModule,
 	HomeRoutingModule
   ],
-  providers: [ AuthService, AuthGuard, ReportsService, ChannelPartnersService ]
+  providers: [ AuthService, AuthGuard, ReportsService, ChannelPartnersService ],
 })
 
 export class HomeModule { }

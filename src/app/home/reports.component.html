@@ -3,8 +3,11 @@
 	<div class="content-section header">
 		<h1>{{report.title}} Report</h1>
 	</div>
+	<div class="content-section" *ngIf="chartType">
+		<p-chart [type]="chartType" [data]="chartData"></p-chart>
+	</div>
 	<div class="content-section body">
-		<p-header>{{report.title}}</p-header>
+
 		<p-dataTable [value]="rows" [lazy]="true" [rows]="rowsPerPage" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRowsLazy($event)" >
 		    <p-column *ngFor="let col of cols" [field]="col.field" [header]="col.header" [sortable]="col.sortable"></p-column>
 		</p-dataTable>

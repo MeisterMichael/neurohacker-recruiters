@@ -5,10 +5,10 @@ import { ChannelPartner } from './../model/channel-partner.model';
 import { AuthService } from './../services/auth.service';
 
 @Component({
-    templateUrl: './tools.component.html'
+    templateUrl: './recruiters.component.html'
 })
 
-export class ToolsComponent implements OnInit {
+export class RecruitersComponent implements OnInit {
     private indextab: number = -1;
 
 	channelPartner : ChannelPartner

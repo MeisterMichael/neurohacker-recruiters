@@ -5,14 +5,14 @@ import { AuthGuard } from './../common/auth.guard';
 
 // Page Components
 import { DashboardComponent } from "./dashboard.component";
-import { ToolsComponent } from "./tools.component";
+import { RecruitersComponent } from "./recruiters.component";
 import { ReportsComponent } from "./reports.component";
 
 
 export const homeRoutes: Routes = [
     {
-        path: 'tools',
-        component: ToolsComponent,
+        path: 'recruiters',
+        component: RecruitersComponent,
 		canActivate: [AuthGuard]
     },
     {

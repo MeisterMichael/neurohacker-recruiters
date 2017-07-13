@@ -15,7 +15,9 @@ export class ReportsComponent implements OnInit {
 	rows: Array<Object>
 	cols: Array<Object>
 	totalRecords: Number = 0
-	rowsPerPage: Number = 10
+	rowsPerPage: Number = 20
+	chartType: String = null
+	chartData: any = null
 
     constructor( private route: ActivatedRoute, private reportsService : ReportsService ) {
     }
@@ -27,12 +29,20 @@ export class ReportsComponent implements OnInit {
 	              .then( report => {
 					  this.report = report
 					  this.rows = []
+					  this.chartType = null
+					  this.chartData = null
 					  this.cols = report.cols
 
 					  // @todo load first set of records
 					  this.reportsService.getResults( report, { rows: this.rowsPerPage, first: 0 } ).then( results => {
 						  this.totalRecords = results.totalRecords
 						  this.rows = results.rows
+
+						  if ( results.chart ) {
+	  						  this.chartType = results.chart['type']
+	  						  this.chartData = results.chart['data']
+						  }
+
 					  })
 				  });
 	         }

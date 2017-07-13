@@ -9,8 +9,8 @@ export class ReportsService {
 
 	constructor() {
 		this.reports = [
-			{ id: 'test1', title: 'Recruit Performance', cols: [{field: 'vin', header: 'Vin', sortable: true },{field: 'year', header: 'Year', sortable: true}], rows: [] },
-			{ id: 'test2', title: 'Recruit Orders', cols: [{field: 'vin', header: 'Vin', sortable: true},{field: 'make', header: 'Make', sortable: true}], rows: [] }
+			{ id: 'test1', title: 'Recruit Performance', cols: [{field: 'vin', header: 'Vin', sortable: true },{field: 'year', header: 'Year', sortable: true}] },
+			{ id: 'test2', title: 'Recruit Orders', cols: [{field: 'vin', header: 'Vin', sortable: true},{field: 'make', header: 'Make', sortable: true}] }
 		]
 	}
 
@@ -32,6 +32,8 @@ export class ReportsService {
 		let offset = args['first'] || 0
 		let limit = args['rows'] || 10
 		let page = Math.round(limit / offset) + 1
+		let sortField = args['sortField']
+		let sortOrder = (args['sortOrder'] == 1 ? 'asc' : 'desc')
 		let totalRecords = 0
 
 
@@ -49,7 +51,27 @@ export class ReportsService {
 
 		let results : Results = {
 			rows: rows,
-			totalRecords: totalRecords
+			totalRecords: totalRecords,
+			chart: {
+				type: 'line',
+				data: {
+		            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+		            datasets: [
+		                {
+		                    label: 'First Dataset',
+		                    data: [65, 59, 80, 81, 56, 55, 40],
+		                    fill: false,
+		                    borderColor: '#4bc0c0'
+		                },
+		                {
+		                    label: 'Second Dataset',
+		                    data: [28, 48, 40, 19, 86, 27, 90],
+		                    fill: false,
+		                    borderColor: '#565656'
+		                }
+		            ]
+		        }
+			}
 		}
 
 		return Promise.resolve( results )
