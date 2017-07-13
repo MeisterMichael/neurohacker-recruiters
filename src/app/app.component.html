@@ -1,0 +1,27 @@
+
+<div class="layout-wrapper">
+
+	<div id="layout-topbar">
+		<a class="menu-button" href="#">
+		   <i class="fa fa-bars"></i>
+	   </a>
+
+	   <a class="logo" routerLink="/reports">
+		   <img alt="logo" src="http://4dv2rr2oq88x3vh6hkj2sel1.wpengine.netdna-cdn.com/wp-content/uploads/2016/08/logo-neurohcker-1.png">
+	   </a>
+
+	   <ul class="topbar-menu" *ngIf="authService.isLogged()" >
+		   <li>
+			   <a routerLink="/reports" routerLinkActive="active">Reports</a>
+		   </li>
+		   <li>
+			   <a routerLink="/tools" routerLinkActive="active">Tools</a>
+		   </li>
+		   <li>
+			   <button pButton type="button" (click)="logout()" label="Logout"></button>
+		   </li>
+	   </ul>
+	</div>
+
+	<router-outlet></router-outlet>
+</div>

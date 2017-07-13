@@ -1,0 +1,15 @@
+
+<div id="layout-sidebar">
+	<div class="layout-menu">
+		<a routerLink="/reports" routerLinkActive="active" id="reports_menu">
+			<i class="fa fa-circle layout-menu-icon-active"></i>
+			<i class="fa fa-circle-o layout-menu-icon-inactive"></i>
+			<span>Dashboard</span>
+		</a>
+		<a routerLink="/report/{{report.id}}" routerLinkActive="active" *ngFor="let report of reports;">
+			<i class="fa fa-circle layout-menu-icon-active"></i>
+			<i class="fa fa-circle-o layout-menu-icon-inactive"></i>
+			<span>{{report.title}}</span>
+		</a>
+	</div>
+</div>
