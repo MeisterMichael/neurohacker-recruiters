@@ -5,17 +5,14 @@ import {User} from "../model/user.model";
 export class AuthService {
 
 	currentUser(): User {
-		console.log( "sessionStorage.getItem('User')", sessionStorage.getItem('User') )
 		if ( sessionStorage.getItem('User') ) {
 			return JSON.parse( sessionStorage.getItem('User') );
 		} else {
 			return null;
 		}
-
 	}
 
     login(user: User): Promise<boolean> {
-
 		// @todo query api for user and channel partner
 		// FAKE DATA --------------
         if(user.username == 'mike' && user.password == 'test') {
