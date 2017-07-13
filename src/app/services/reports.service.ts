@@ -32,25 +32,24 @@ export class ReportsService {
 		let offset = args['first'] || 0
 		let limit = args['rows'] || 10
 		let page = Math.round(limit / offset) + 1
+		let totalRecords = 0
 
 
-		for (let i = 0; i < args['rows']; i++) {
-			let row = {}
-
+		// @todo query api for data
+		// FAKE DATA --------------
+		totalRecords = 99
+		for (let i = 0; i < limit; i++) {
+			let row = {};
 			report.cols.forEach( (col, key) => {
 				row[col['field']] = Math.random()
-
 			})
-
 			rows.push( row )
-
 		}
-
-		// console.log( 'getResults', rows )
+		// FAKE DATA --------------
 
 		let results : Results = {
 			rows: rows,
-			totalRecords: 99
+			totalRecords: totalRecords
 		}
 
 		return Promise.resolve( results )
@@ -60,6 +59,7 @@ export class ReportsService {
     getReports(): Promise<Array<Report>> {
 
         return Promise.resolve(this.reports);
+
     }
 
 }

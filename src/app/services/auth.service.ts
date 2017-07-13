@@ -15,6 +15,9 @@ export class AuthService {
 	}
 
     login(user: User): Promise<boolean> {
+
+		// @todo query api for user and channel partner
+		// FAKE DATA --------------
         if(user.username == 'mike' && user.password == 'test') {
 			user.name = 'Boo Hoo'
 			user.channelPartner = { id: 'test', name: 'Boo', recruiterURL: 'http://localhost:4200/tools/boo' }
@@ -27,6 +30,7 @@ export class AuthService {
         } else {
             return Promise.resolve(false);
         }
+		// FAKE DATA --------------
     }
 
 
