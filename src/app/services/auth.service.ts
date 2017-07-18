@@ -23,7 +23,7 @@ export class AuthService {
 	}
 
     login(user: User): Promise<boolean> {
-		return this.http.post( "/api/auth", JSON.stringify(user) )
+		return this.http.post( "/api/auth", user )
 			.toPromise()
 			.then( function( response ) : boolean {
 				response = response.json()

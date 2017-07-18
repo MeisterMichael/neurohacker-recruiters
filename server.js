@@ -35,6 +35,16 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || '3000';
 app.set('port', port);
 
+if( process.env.NODE_ENV != 'development' ) {
+	app.set('forceSSLOptions', {
+	  enable301Redirects: true,
+	  trustXFPHeader: false,
+	  httpsPort: 443,
+	  sslRequiredMessage: 'SSL Required.'
+	});
+}
+
+
 /**
  * Create HTTP server.
  */

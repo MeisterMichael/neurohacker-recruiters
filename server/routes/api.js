@@ -1,8 +1,9 @@
 const express = require('express');
 const router  = express.Router();
 const User    = require('../models/user');
-const jwt    = require('jsonwebtoken');
-const config = require('../../config');
+const Report  = require('../models/report');
+const jwt     = require('jsonwebtoken');
+const config  = require('../../config');
 
 /* GET api listing. */
 router.get('/', (req, res) => {
@@ -10,8 +11,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/auth', (req, res) => {
-  	console.log('/api/auth')
-
+  	
 	  // find the user
 	  User.findOne({
 	    username: req.body.username,
@@ -92,121 +92,94 @@ router.use(function(req, res, next) {
 });
 
 
-var fake_channel_partners = [
-	{ id: 'test1', name: 'Joe', recruiterURL: null },
-	{ id: 'test2', name: 'Darrin', recruiterURL: null }
-]
-
-var fake_reports = [
-	{ id: 'test1', title: 'Recruit Performance', cols: [{field: 'vin', header: 'Vin', sortable: true },{field: 'year', header: 'Year', sortable: true}] },
-	{ id: 'test2', title: 'Recruit Orders', cols: [{field: 'vin', header: 'Vin', sortable: true},{field: 'make', header: 'Make', sortable: true}] }
-]
-
-router.get('/channel-partners', (req, res) => {
-  res.send({
-	  status: 200,
-	  mesage: 'OK',
-	  response: {
-	  	totalRecords: 100,
-		data: fake_channel_partners
-	  }
-  });
-});
-
-router.get('/channel-partners/:id', (req, res) => {
-  var channelPartner = fake_channel_partners.find(function(element){ return element.id == req.params.id })
-
-  res.send({
-	  status: 200,
-	  mesage: 'OK',
-	  response: channelPartner
-  });
-});
-
-router.get('/me', (req, res) => {
-  res.send({
-	  status: 200,
-	  mesage: 'OK',
-	  response: getCurrentChannelPartner()
-  });
-});
-
-
 
 router.get('/reports', (req, res) => {
-  res.send({
-	  status: 200,
-	  mesage: 'OK',
-	  response: {
-	  	totalRecords: 100,
-		data: fake_reports
-	  }
-  });
+
+
+
+  		  // find the user
+  	  Report.findAll({}, function(err, reports) {
+  		    if (err) throw err;
+
+  		    if (!reports) {
+  			  res.json({
+  				status: 404,
+  				mesage: 'Not found.'
+  			  });
+  		    } else {
+
+			  res.send({
+				  status: 200,
+				  mesage: 'OK',
+				  response: {
+				  	totalRecords: 100,
+					data: reports
+				  }
+			  });
+  		    }
+
+  		  }
+  	  );
+
 });
 
 router.get('/reports/:id', (req, res) => {
 
-  var report = fake_reports.find(function(element){ return element.id == req.params.id })
+		  // find the user
+	  Report.findOne({
+		    id: req.params.id
+		}, function(err, report) {
+		    if (err) throw err;
 
-  res.send({
-	  status: 200,
-	  mesage: 'OK',
-	  response: report
-  });
+		    if (!report) {
+			  res.json({
+				status: 404,
+				mesage: 'Not found.'
+			  });
+		    } else {
+
+		        res.json({
+			  	  status: 200,
+			  	  mesage: 'OK',
+			  	  response: report
+		        });
+
+		    }
+
+		  }
+	  );
 });
 
 router.get('/reports/:id/results', (req, res) => {
   var rows = [];
   var limit = 20;
 
+  Report.findOne({
+    	id: req.params.id
+	  }, function(err, report) {
+	    if (err) throw err;
 
-  var report = fake_reports.find(function(element){ return element.id == req.params.id })
+	    if (!report) {
+		  	res.json({
+		  	  status: 404,
+		  	  mesage: 'Not found.'
+		  	});
+	    } else {
 
-  for (var i = 0; i < limit; i++) {
-	  var row = {};
-	  report['cols'].forEach(function(element){
-	    row[element.field] = Math.random()
-	  })
+			report.results( req.params, function( err, results ) {
 
-	  row.year = Math.random()
-	  rows.push( row )
-  }
+			  res.send({
+			    status: 200,
+			    mesage: 'OK',
+			    response: results
+			  });
 
+			} )
 
-  var results = {
-	rows: rows,
-	totalRecords: 100,
-	chart: {
-		type: 'line',
-		data: {
-	        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-	        datasets: [
-	            {
-	                label: 'First Dataset',
-	                data: [65, 59, 80, 81, 56, 55, 40],
-	                fill: false,
-	                borderColor: '#4bc0c0'
-	            },
-	            {
-	                label: 'Second Dataset',
-	                data: [28, 48, 40, 19, 86, 27, 90],
-	                fill: false,
-	                borderColor: '#565656'
-	            }
-	        ]
 	    }
-	}
-  }
 
-  res.send({
-    status: 200,
-    mesage: 'OK',
-    response: results
-  });
+	  }
+  );
 });
-
-function getCurrentChannelPartner( req ) {
-	return fake_channel_partners[0]
-}
 
 module.exports = router;
