@@ -1,8 +1,18 @@
 import {Injectable} from "@angular/core";
 import {User} from "../model/user.model";
+import { Http, Response, Headers, RequestOptions } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
+
+
 
 @Injectable()
 export class AuthService {
+
+	constructor (private http: Http) {}
+
+	accessToken(): String {
+		return sessionStorage.getItem('AccessToken')
+	}
 
 	currentUser(): User {
 		if ( sessionStorage.getItem('User') ) {
@@ -13,27 +23,24 @@ export class AuthService {
 	}
 
     login(user: User): Promise<boolean> {
-		// @todo query api for user and channel partner
-		// FAKE DATA --------------
-        if(user.username == 'mike' && user.password == 'test') {
-			user.name = 'Boo Hoo'
-			user.channelPartner = { id: 'test', name: 'Boo', recruiterURL: 'http://localhost:4200/tools/boo' }
-
-            if(typeof (Storage) !== 'undefined') {
-                sessionStorage.setItem('User',JSON.stringify(user));
-            }
-
-            return Promise.resolve(true);
-        } else {
-            return Promise.resolve(false);
-        }
-		// FAKE DATA --------------
+		return this.http.post( "/api/auth", JSON.stringify(user) )
+			.toPromise()
+			.then( function( response ) : boolean {
+				response = response.json()
+				if ( response.status == 200 ) {
+					sessionStorage.setItem( 'AccessToken', response['response']['token'] )
+					sessionStorage.setItem( 'User', JSON.stringify(response['response']['user']) )
+					return true;
+				} else {
+					return false;
+				}
+			} );
     }
 
 
     isLogged(): boolean {
         if(typeof (Storage) !== 'undefined') {
-            if(sessionStorage.getItem('User')) {
+            if(sessionStorage.getItem('AccessToken')) {
                 return true;
             }
         }
@@ -42,6 +49,7 @@ export class AuthService {
 
 
     logout(): Promise<boolean> {
+        sessionStorage.removeItem('AccessToken')
         sessionStorage.removeItem('User')
         return Promise.resolve(true);
     }

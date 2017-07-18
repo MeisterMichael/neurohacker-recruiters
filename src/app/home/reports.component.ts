@@ -50,7 +50,7 @@ export class ReportsComponent implements OnInit {
     }
 
 	loadRowsLazy(event: Object) {
-		console.log( 'loadRowsLazy', event );
+		// console.log( 'loadRowsLazy', event );
 		//in a real application, make a remote request to load data using state metadata from event
         //event.first = First row offset
         //event.rows = Number of rows per page
