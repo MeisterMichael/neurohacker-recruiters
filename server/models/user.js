@@ -1,5 +1,7 @@
 
-
+const db = require('./database');
+var bcrypt = require('bcrypt');
+const config	= require('../../config');
 
 //Public
 function User( attributes ) {
@@ -9,41 +11,53 @@ function User( attributes ) {
 }
 module.exports = User;
 
+var default_query = "SELECT \"name\" as \"username\", encrypted_password, email, (first_name || ' ' || last_name) \"name\" FROM users WHERE \"role\" = 'channel_partner' "
+var column_map = { id: 'id', username: 'name', email: 'email', name: "(first_name || ' ' || last_name)" }
+
 User.findOne = function( args, callback ){
-	if ( !args )  args = {};
+	if ( !args ) args = {};
+	var query = ""+default_query;
 
-	console.log( args )
+	var values = []
 
-	var user = null;
-	if ( args.id ) user = users.find(function(element){ return element.id == args.id })
-	if ( args.username && args.password ) user = users.find(function(element){ return element.username == args.username && element.password == args.password })
+	Object.keys(args).forEach( function(key){
+		if ( column_map[key] ) {
+			values.push( args[key] )
+			query = query + " AND \""+column_map[key]+"\" = $"+values.length
+		}
+	})
 
-	callback( undefined, user )
+	db.query(query, values, (err, res) => {
+		var user = new User( res.rows[0] )
+		if( args.password && !bcrypt.compareSync( args.password, user.encrypted_password ) ) user = null
+
+		callback( undefined, user )
+	})
+
 }
 
 User.findAll = function( args, callback ){
-	if ( !args )  args = {};
+	if ( !args ) args = {};
+	var query = ""+default_query;
 
-	callback( undefined, users )
+	var values = []
+
+	Object.keys(args).forEach( function(key){
+		if ( column_map[key] ) {
+			values.push( args[key] )
+			query = query + " AND \""+column_map[key]+"\" = $"+values.length
+		}
+	})
+
+	db.query(query, values, (err, res) => {
+		var users = []
+		res.rows.forEach(function( row ){
+			var user = new User( row )
+			users.push(user)
+		})
+		callback( undefined, users )
+	})
 
 }
 
-
-
 //Private
-var users = []
-
-users.push(
-	new User({
-		id: 1,
-		name: "Michael Ferguson",
-		username: "michael",
-		email: "meister@spacekace.com",
-		password: "boo11",
-		channelPartner: {
-			id: 99,
-			name: "Michael Ferguson",
-			recruiterURL: "http://test.com/cool/rassdfasefasdfasdf"
-		}
-	})
-)

@@ -1,4 +1,4 @@
-
+const db = require('./database');
 
 //Public
 function Report( attributes ) {
@@ -17,7 +17,7 @@ Report.prototype.results = function( args = {}, callback ) {
 	for (var i = 0; i < args.limit; i++) {
 		var row = {};
 		this.cols.forEach(function(element){
-		  row[element.field] = Math.random()
+			row[element.field] = Math.random()
 		})
 
 		row.year = Math.random()
@@ -26,28 +26,28 @@ Report.prototype.results = function( args = {}, callback ) {
 
 
 	var results = {
-	  rows: rows,
-	  totalRecords: 100,
-	  chart: {
-		  type: 'line',
-		  data: {
-			  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-			  datasets: [
-				  {
-					  label: 'First Dataset',
-					  data: [65, 59, 80, 81, 56, 55, 40],
-					  fill: false,
-					  borderColor: '#4bc0c0'
-				  },
-				  {
-					  label: 'Second Dataset',
-					  data: [28, 48, 40, 19, 86, 27, 90],
-					  fill: false,
-					  borderColor: '#565656'
-				  }
-			  ]
-		  }
-	  }
+		rows: rows,
+		totalRecords: 100,
+		chart: {
+			type: 'line',
+			data: {
+				labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+				datasets: [
+					{
+						label: 'First Dataset',
+						data: [65, 59, 80, 81, 56, 55, 40],
+						fill: false,
+						borderColor: '#4bc0c0'
+					},
+					{
+						label: 'Second Dataset',
+						data: [28, 48, 40, 19, 86, 27, 90],
+						fill: false,
+						borderColor: '#565656'
+					}
+				]
+			}
+		}
 	}
 
 	callback( undefined, results )
@@ -55,7 +55,7 @@ Report.prototype.results = function( args = {}, callback ) {
 }
 
 Report.findOne = function( args, callback ){
-	if ( !args )  args = {};
+	if ( !args ) args = {};
 
 	var report = reports.find(function(element){ return element.id == args.id })
 
@@ -63,7 +63,7 @@ Report.findOne = function( args, callback ){
 }
 
 Report.findAll = function( args, callback ){
-	if ( !args )  args = {};
+	if ( !args ) args = {};
 
 	callback( undefined, reports )
 
