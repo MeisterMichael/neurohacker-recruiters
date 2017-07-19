@@ -12,46 +12,46 @@ Report.prototype.results = function( args = {}, callback ) {
 
 	if ( !args.limit ) args.limit = 20
 
-	var rows = []
+	var query = this.query.sql+" LIMIT $"+(this.query.params.length+1)
+	var values = []
 
-	for (var i = 0; i < args.limit; i++) {
-		var row = {};
-		this.cols.forEach(function(element){
-			row[element.field] = Math.random()
-		})
-
-		row.year = Math.random()
-		rows.push( row )
-	}
+	this.query.params.forEach(function( paramName ){
+		values.push( args[paramName] )
+	})
+	values.push( args.limit )
 
 
-	var results = {
-		rows: rows,
-		totalRecords: 100,
-		chart: {
-			type: 'line',
-			data: {
-				labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-				datasets: [
-					{
-						label: 'First Dataset',
-						data: [65, 59, 80, 81, 56, 55, 40],
-						fill: false,
-						borderColor: '#4bc0c0'
-					},
-					{
-						label: 'Second Dataset',
-						data: [28, 48, 40, 19, 86, 27, 90],
-						fill: false,
-						borderColor: '#565656'
-					}
-				]
+	db.query(query, values, (err, res) => {
+
+		if ( err ) {
+			console.log(err, query)
+			callback( err, undefined )
+		} else {
+
+			var results = {
+				rows: res.rows,
+				totalRecords: res.rowCount,
+				chart: null
 			}
+
+			callback( undefined, results )
 		}
+
+
+	})
+
+
+
+
+}
+
+
+Report.prototype.publicAttributes = function(){
+	return {
+		id: this.id,
+		title: this.title,
+		cols: this.cols
 	}
-
-	callback( undefined, results )
-
 }
 
 Report.findOne = function( args, callback ){
@@ -65,7 +65,7 @@ Report.findOne = function( args, callback ){
 Report.findAll = function( args, callback ){
 	if ( !args ) args = {};
 
-	callback( undefined, reports )
+	callback( undefined, reports.slice(0) )
 
 }
 
@@ -76,22 +76,29 @@ var reports = []
 
 reports.push(
 	new Report({
-		id: 'test1',
-		title: 'Recruit Performance',
+		id: 'recruits',
+		title: 'My Recruits',
+		query: {
+			sql: 'SELECT name, COUNT(CASE WHEN transaction_items.transaction_type = 1 THEN 1 END) unitssold, COUNT(CASE WHEN transaction_items.transaction_type = -1 THEN 1 END) unitsrefunded FROM channel_partners LEFT JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 GROUP BY channel_partners.id',
+			params: [ 'channelPartnerId' ],
+			defaults: {  }
+		},
 		cols: [
-			{field: 'vin', header: 'Vin', sortable: true },
-			{field: 'year', header: 'Year', sortable: true}
+			{ field: 'name', header: 'Recruit\'s Name', sortable: false },
+			{ field: 'unitssold', header: 'Units Sold', sortable: false },
+			{ field: 'unitsrefunded', header: 'Units Refunded', sortable: false }
 		]
 	})
 )
 
-reports.push(
-	new Report({
-		id: 'test2',
-		title: 'Recruit Orders',
-		cols: [
-			{field: 'vin', header: 'Vin', sortable: true},
-			{field: 'make', header: 'Make', sortable: true}
-		]
-	})
-)
+// reports.push(
+// 	new Report({
+// 		id: 'test2',
+// 		title: 'Recruit Orders',
+// 		query: 'sql and stuff',
+// 		cols: [
+// 			{ field: 'vin', header: 'Vin', sortable: false },
+// 			{ field: 'make', header: 'Make', sortable: false }
+// 		]
+// 	})
+// )

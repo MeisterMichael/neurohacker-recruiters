@@ -11,8 +11,19 @@ function User( attributes ) {
 }
 module.exports = User;
 
-var default_query = "SELECT \"name\" as \"username\", encrypted_password, email, (first_name || ' ' || last_name) \"name\" FROM users WHERE \"role\" = 'channel_partner' "
-var column_map = { id: 'id', username: 'name', email: 'email', name: "(first_name || ' ' || last_name)" }
+var default_query = "SELECT users.\"name\" as \"username\", users.encrypted_password, users.email, (users.first_name || ' ' || users.last_name) \"name\", channel_partners.id \"channelPartnersId\", NULL \"channelPartnerURL\" FROM users INNER JOIN channel_partners ON channel_partners.user_id = users.id WHERE users.\"role\" = 'channel_partner' "
+var column_map = { id: '\"users\".\"id\"', username: '\"users\".\"name\"', email: '\"users\".\"email\"', name: "(\"users\".\"first_name\" || ' ' || \"users\".\"last_name\")", channelPartnersId: "\"channel_partners\".\"id\"" }
+
+User.prototype.publicAttributes = function(){
+	return {
+		id: this.id,
+		username: this.username,
+		email: this.email,
+		name: this.name,
+		channelPartnerId: this.channelPartnerId,
+		channelPartnerURL: this.channelPartnerURL
+	}
+}
 
 User.findOne = function( args, callback ){
 	if ( !args ) args = {};
@@ -23,11 +34,12 @@ User.findOne = function( args, callback ){
 	Object.keys(args).forEach( function(key){
 		if ( column_map[key] ) {
 			values.push( args[key] )
-			query = query + " AND \""+column_map[key]+"\" = $"+values.length
+			query = query + " AND "+column_map[key]+" = $"+values.length
 		}
 	})
 
 	db.query(query, values, (err, res) => {
+		console.log( "res", res, err, query )
 		var user = new User( res.rows[0] )
 		if( args.password && !bcrypt.compareSync( args.password, user.encrypted_password ) ) user = null
 
