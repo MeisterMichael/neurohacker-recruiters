@@ -146,9 +146,6 @@ router.get('/reports/:id', (req, res) => {
 });
 
 router.get('/reports/:id/results', (req, res) => {
-	var rows = [];
-	var limit = 20;
-
 	Report.findOne({
 		id: req.params.id
 	}, function(err, report) {
@@ -161,13 +158,22 @@ router.get('/reports/:id/results', (req, res) => {
 			});
 		} else {
 
-			report.results( Object.assign({}, req.params, { channelPartnerId: req.decoded.channelPartnersId, userId: req.decoded.id } ), function( err, results ) {
+			report.results( Object.assign({}, req.query, { channelPartnerId: req.decoded.channelPartnersId, userId: req.decoded.id } ), function( err, results ) {
+				if ( req.params.format == 'csv' ) {
 
-				res.send({
-					status: 200,
-					mesage: 'OK',
-					response: results
-				});
+					// @todo render as json
+					// res.attachment('report.csv');
+					// csv().from(results).to(res);
+
+				} else {
+
+					res.send({
+						status: 200,
+						mesage: 'OK',
+						response: results
+					});
+
+				}
 
 			});
 		}
