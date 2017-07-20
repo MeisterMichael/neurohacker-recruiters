@@ -49,6 +49,10 @@ export class ReportsComponent implements OnInit {
 	       });
     }
 
+	downloadCSV() {
+		this.reportsService.csvResults( this.report, {} )
+	}
+
 	loadRowsLazy(event: Object) {
 		// console.log( 'loadRowsLazy', event );
 		//in a real application, make a remote request to load data using state metadata from event

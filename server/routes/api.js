@@ -1,4 +1,5 @@
 const express = require('express');
+const csv = require('express-csv')
 const router	= express.Router();
 const User		= require('../models/user');
 const Report	= require('../models/report');
@@ -159,11 +160,25 @@ router.get('/reports/:id/results', (req, res) => {
 		} else {
 
 			report.results( Object.assign({}, req.query, { channelPartnerId: req.decoded.channelPartnerId, userId: req.decoded.id } ), function( err, results ) {
-				if ( req.params.format == 'csv' ) {
+				if ( req.query.format == 'csv' ) {
 
 					// @todo render as json
-					// res.attachment('report.csv');
-					// csv().from(results).to(res);
+					res.attachment(report.title+'.csv')
+
+					var rows = [ [] ]
+					report.cols.forEach(function( col ){
+						rows[0].push( col.header )
+					})
+
+					results.rows.forEach(function(resultRow){
+						var row = []
+						report.cols.forEach(function( col ){
+							row.push( resultRow[col.field] )
+						})
+						rows.push(row)
+					})
+
+					res.csv(rows);
 
 				} else {
 

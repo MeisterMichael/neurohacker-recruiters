@@ -24,8 +24,7 @@ export class ReportsService {
 			} );
     }
 
-	getResults( report: Report, args: Object = {} ) : Promise<Results> {
-		let rows = []
+	getResultParams( report: Report, args: Object = {} ) : Object {
 
 		let offset = args['first'] || 0
 		let limit = args['rows'] || 10
@@ -46,8 +45,24 @@ export class ReportsService {
 			}
 		})
 
+		return Object.assign( filters, { token: this.authService.accessToken(), offset: offset, limit: limit, page: page, sortField: sortField, sortOrder: sortOrder } )
+	}
 
-		return this.http.get( "/api/reports/"+report.id+"/results", { params: Object.assign( filters, { token: this.authService.accessToken(), offset: offset, limit: limit, page: page, sortField: sortField, sortOrder: sortOrder } ) } )
+	csvResults( report: Report, args: Object = {} ) : void {
+
+
+		var params = Object.assign( this.getResultParams( report, args ), { offset: 0, limit: 100000, page: 1, format: 'csv' } )
+		var queryString = Object.keys(params).reduce(function(a,k){a.push(k+'='+encodeURIComponent(params[k]));return a},[]).join('&')
+
+
+		window.location.href = "/api/reports/"+report.id+"/results?"+queryString
+	}
+
+	getResults( report: Report, args: Object = {} ) : Promise<Results> {
+
+		var params = this.getResultParams( report, args )
+
+		return this.http.get( "/api/reports/"+report.id+"/results", { params: params } )
 			.toPromise()
 			.then( function( response ) : Results {
 				response = response.json()
