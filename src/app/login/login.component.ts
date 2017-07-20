@@ -30,7 +30,8 @@ export class LoginComponent implements OnInit{
             username: this.username,
             password: this.password,
 			name: null,
-			channelPartner: null
+			channelPartnerId: null,
+			recruiterURL: null
         }
         this.authService.login(user).then((result:boolean) => {
             if(result) {

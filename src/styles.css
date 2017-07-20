@@ -266,6 +266,9 @@ body {
 	background-image: linear-gradient(270deg, #2bc0ec, #1b81d7);
 	color: #fff
 }
+.content-section.filters {
+	overflow: visible;
+}
 .content-section.body {
 	background: #fff;
 }

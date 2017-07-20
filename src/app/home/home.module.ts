@@ -25,7 +25,7 @@ import { ChannelPartnersService } from './../services/channel-partners.service';
 import { HomeRoutingModule } from './home-routing.module';
 
 // PrimeNG Components
-import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableModule, ChartModule }  from 'primeng/primeng';
+import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableModule, ChartModule, CalendarModule, MultiSelectModule }  from 'primeng/primeng';
 
 
 @NgModule({
@@ -39,12 +39,14 @@ import { InputTextModule, ButtonModule, PasswordModule, GrowlModule, DataTableMo
     BrowserModule,
     BrowserAnimationsModule,
     ButtonModule,
+	CalendarModule,
 	ChartModule,
 	DataTableModule,
     FormsModule,
 	GrowlModule,
     HttpModule,
     InputTextModule,
+	MultiSelectModule,
     PasswordModule,
 	HomeRoutingModule
   ],

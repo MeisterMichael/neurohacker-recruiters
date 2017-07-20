@@ -11,7 +11,6 @@ import { AuthService } from './../services/auth.service';
 export class RecruitersComponent implements OnInit {
     private indextab: number = -1;
 
-	channelPartner : ChannelPartner
 	recruiterURL: String
 
     constructor( private route: ActivatedRoute, private authService : AuthService ) {
@@ -19,8 +18,7 @@ export class RecruitersComponent implements OnInit {
     }
 
     ngOnInit():void {
-		this.channelPartner = this.authService.currentUser().channelPartner
-		this.recruiterURL = this.channelPartner.recruiterURL
+		this.recruiterURL = this.authService.currentUser().recruiterURL
     }
 
 }

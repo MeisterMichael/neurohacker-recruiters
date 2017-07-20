@@ -158,7 +158,7 @@ router.get('/reports/:id/results', (req, res) => {
 			});
 		} else {
 
-			report.results( Object.assign({}, req.query, { channelPartnerId: req.decoded.channelPartnersId, userId: req.decoded.id } ), function( err, results ) {
+			report.results( Object.assign({}, req.query, { channelPartnerId: req.decoded.channelPartnerId, userId: req.decoded.id } ), function( err, results ) {
 				if ( req.params.format == 'csv' ) {
 
 					// @todo render as json

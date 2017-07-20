@@ -1,8 +1,25 @@
-<div id="layout-content">
+<div id="layout-content" *ngIf="report">
 	<reports-sidebar-app></reports-sidebar-app>
 	<div class="content-section header">
 		<h1>{{report.title}} Report</h1>
 	</div>
+
+	<div class="content-section filters" *ngIf="report.filters.length > 0">
+		<div class="ui-g">
+			<div class="ui-g-12 ui-md-6" *ngFor="let filter of report.filters;">
+				<label>{{filter.label}}</label>
+				<div *ngIf="filter.input == 'p-calendar-range'">
+					<div style='float:left;margin-right: 1em;'><p-calendar [(ngModel)]="filter.value.min" [placeholder]="Min" dateFormat="mm/dd/yy"></p-calendar></div>
+					<div><p-calendar [(ngModel)]="filter.value.max" [placeholder]="Max" dateFormat="mm/dd/yy"></p-calendar></div>
+				</div>
+			</div>
+			<div class="ui-g-12">
+				<button pButton type="button" (click)="loadRowsLazy()" label="Update"></button>
+			</div>
+		</div>
+
+	</div>
+
 	<div class="content-section" *ngIf="chartType">
 		<p-chart [type]="chartType" [data]="chartData"></p-chart>
 	</div>

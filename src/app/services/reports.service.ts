@@ -34,7 +34,20 @@ export class ReportsService {
 		let sortOrder = (args['sortOrder'] == 1 ? 'asc' : 'desc')
 		let totalRecords = 0
 
-		return this.http.get( "/api/reports/"+report.id+"/results", { params: { token: this.authService.accessToken(), offset: offset, limit: limit, page: page, sortField: sortField, sortOrder: sortOrder } } )
+		let filters = {}
+		report.filters.forEach(function(filter){
+			if( typeof filter['value'] == 'object' ) {
+				Object.keys(filter['value']).forEach(function(key){
+
+					filters[filter['field']+"["+key+"]"] = filter['value'][key]
+				})
+			} else {
+				filters[filter['field']] = filter['value']
+			}
+		})
+
+
+		return this.http.get( "/api/reports/"+report.id+"/results", { params: Object.assign( filters, { token: this.authService.accessToken(), offset: offset, limit: limit, page: page, sortField: sortField, sortOrder: sortOrder } ) } )
 			.toPromise()
 			.then( function( response ) : Results {
 				response = response.json()

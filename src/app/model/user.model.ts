@@ -4,6 +4,7 @@ export interface User {
     username: string;
     password: string;
 	name: string;
-	channelPartner: ChannelPartner;
+	channelPartnerId: string;
+	recruiterURL: string;
 
 }

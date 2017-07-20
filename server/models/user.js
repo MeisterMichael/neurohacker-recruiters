@@ -11,8 +11,8 @@ function User( attributes ) {
 }
 module.exports = User;
 
-var default_query = "SELECT users.\"name\" as \"username\", users.encrypted_password, users.email, (users.first_name || ' ' || users.last_name) \"name\", channel_partners.id \"channelPartnersId\", NULL \"channelPartnerURL\" FROM users INNER JOIN channel_partners ON channel_partners.user_id = users.id WHERE users.\"role\" = 'channel_partner' "
-var column_map = { id: '\"users\".\"id\"', username: '\"users\".\"name\"', email: '\"users\".\"email\"', name: "(\"users\".\"first_name\" || ' ' || \"users\".\"last_name\")", channelPartnersId: "\"channel_partners\".\"id\"" }
+var default_query = "SELECT users.\"name\" as \"username\", users.encrypted_password, users.email, (users.first_name || ' ' || users.last_name) \"name\", channel_partners.id \"channelPartnerId\", (CASE WHEN channel_partners.refersion_channel_partner_id IS NOT NULL THEN 'https://neurohacker.refersion.com/?nhpid='||channel_partners.refersion_channel_partner_id ELSE 'N/A' END) \"recruiterURL\" FROM users INNER JOIN channel_partners ON channel_partners.user_id = users.id WHERE users.\"role\" = 'channel_partner' "
+var column_map = { id: '\"users\".\"id\"', username: '\"users\".\"name\"', email: '\"users\".\"email\"', name: "(\"users\".\"first_name\" || ' ' || \"users\".\"last_name\")", channelPartnerId: "\"channel_partners\".\"id\"" }
 
 User.prototype.publicAttributes = function(){
 	return {
@@ -21,7 +21,7 @@ User.prototype.publicAttributes = function(){
 		email: this.email,
 		name: this.name,
 		channelPartnerId: this.channelPartnerId,
-		channelPartnerURL: this.channelPartnerURL
+		recruiterURL: this.recruiterURL
 	}
 }
 

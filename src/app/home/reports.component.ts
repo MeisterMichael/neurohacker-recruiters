@@ -57,6 +57,7 @@ export class ReportsComponent implements OnInit {
         //event.sortField = Field name to sort with
         //event.sortOrder = Sort order as number, 1 for asc and -1 for dec
         //filters: FilterMetadata object having field as key and filter value, filter matchMode as value
+		if( !event ) event = { first: 0, rows: this.rowsPerPage }
 
         //imitate db connection over a network
         setTimeout(() => {
