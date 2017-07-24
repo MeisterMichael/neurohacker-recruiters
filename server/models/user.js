@@ -40,10 +40,16 @@ User.findOne = function( args, callback ){
 
 	db.query(query, values, (err, res) => {
 		console.log( "res", res, err, query )
-		var user = new User( res.rows[0] )
-		if( args.password && !bcrypt.compareSync( args.password, user.encrypted_password ) ) user = null
+		var user = null;
 
-		callback( undefined, user )
+		if( !err && res.rows.length > 0 ) {
+
+			user = new User( res.rows[0] )
+
+			if( args.password && !bcrypt.compareSync( args.password, user.encrypted_password ) ) user = null
+		}
+
+		callback( err, user )
 	})
 
 }
