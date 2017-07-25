@@ -18,6 +18,7 @@
 		   <li>
 			   <a routerLink="/recruiters" routerLinkActive="active">Recruiters</a>
 		   </li>-->
+		   <li> Welcome, {{authService.currentUser().name}} </li>
 		   <li>
 			   <a routerLink="/logout" (click)="logout()">Logout</a>
 		   </li>
