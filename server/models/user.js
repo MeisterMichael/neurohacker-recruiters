@@ -39,7 +39,6 @@ User.findOne = function( args, callback ){
 	})
 
 	db.query(query, values, (err, res) => {
-		console.log( "res", res, err, query )
 		var user = null;
 
 		if( !err && res.rows.length > 0 ) {

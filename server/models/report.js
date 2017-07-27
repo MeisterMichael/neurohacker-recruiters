@@ -129,13 +129,13 @@ reports.push(
 		title: 'Recruit Transactions',
 		query: {
 			count: 'SELECT COUNT(distinct src_transaction_id) FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3',
-			sql: 'SELECT name, to_char( MAX(transaction_items.src_created_at), \'MM/DD/YYYY\') src_created_at, src_transaction_id, ROUND(SUM(total) / 100.0, 2)::money total FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3 GROUP BY channel_partners.id, transaction_items.src_transaction_id',
+			sql: 'SELECT name, to_char( MAX(transaction_items.src_created_at), \'MM/DD/YYYY\') src_created_at, src_order_label, ROUND(SUM(total) / 100.0, 2)::money total FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3 GROUP BY channel_partners.id, transaction_items.src_transaction_id',
 			params: [ 'channelPartnerId','transaction_items.src_created_at[min]', 'transaction_items.src_created_at[max]' ],
 			defaults: {  }
 		},
 		cols: [
 			{ field: 'name', header: 'Recruit', sortable: false },
-			{ field: 'src_transaction_id', header: 'Order ID', sortable: false },
+			{ field: 'src_order_label', header: 'Order ID', sortable: false },
 			{ field: 'src_created_at', header: 'Date', sortable: false },
 			{ field: 'total', header: 'Total', sortable: false }
 		],
