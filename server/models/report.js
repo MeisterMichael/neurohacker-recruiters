@@ -8,21 +8,53 @@ function Report( attributes ) {
 }
 module.exports = Report;
 
-Report.prototype.results = function( args = {}, callback ) {
 
-	if ( !args.limit ) args.limit = 20
-	if ( !args.offset ) args.offset = 0
 
-	Object.keys(args).forEach(function(argKey){
-		if( typeof args[argKey] == 'object' ) {
-			Object.keys(args[argKey]).forEach(function(key){
-				args[argKey+"["+key+"]"] = args[argKey][key]
-			})
-		}
+Report.prototype.resultsChart = function( args = {}, callback ) {
+
+	var values = [];
+	this.query.params.forEach(function( paramName ){
+		values.push( args[paramName] )
 	})
 
+	db.query(this.query.chart, values, (err, res) => {
+
+		if ( err ) {
+			console.log('resultsChart', err, this.query.chart, [])
+			callback( err, undefined )
+		} else {
+			var results = Object.assign( { data: { labels: [], datasets: [] } }, this.chart );
+
+			var datasets = {}
+
+			res.rows.forEach(function( row ){
+				if( !datasets[row['row_label']] )
+					datasets[row['row_label']] = []
+
+				datasets[row['row_label']].push( row['value'] )
+
+				if ( results.data.labels.indexOf(row['col_label']) === -1 )
+					results.data.labels.push(row['col_label'])
+			})
+
+			Object.keys(datasets).forEach(function(label){
+				results.data.datasets.push({
+					label: label,
+					data: datasets[label]
+				})
+			})
+
+			callback( err, results )
+		}
+
+
+	})
+}
+
+Report.prototype.resultsRows = function( args = {}, callback ) {
+
 	var countQuery = this.query.count
-	var query = this.query.sql+" OFFSET $"+(this.query.params.length+1)+" LIMIT $"+(this.query.params.length+2)
+	var rowQuery = this.query.sql+" OFFSET $"+(this.query.params.length+1)+" LIMIT $"+(this.query.params.length+2)
 	var values = []
 
 	this.query.params.forEach(function( paramName ){
@@ -31,16 +63,16 @@ Report.prototype.results = function( args = {}, callback ) {
 	values.push( args.offset )
 	values.push( args.limit )
 
-	db.query(query, values, (err, res) => {
+	db.query(rowQuery, values, (err, res) => {
 
 		if ( err ) {
-			console.log('rowQuery', err, query, values)
+			console.log('rowQuery', err, rowQuery, values)
 			callback( err, undefined )
 		} else {
 
 			var results = {
 				rows: res.rows,
-				chart: null
+				totalRecords: 0
 			}
 
 
@@ -62,6 +94,41 @@ Report.prototype.results = function( args = {}, callback ) {
 
 
 	})
+
+}
+
+Report.prototype.results = function( args = {}, callback ) {
+
+	if ( !args.limit ) args.limit = 20
+	if ( !args.offset ) args.offset = 0
+
+	Object.keys(args).forEach(function(argKey){
+		if( typeof args[argKey] == 'object' ) {
+			Object.keys(args[argKey]).forEach(function(key){
+				args[argKey+"["+key+"]"] = args[argKey][key]
+			})
+		}
+	})
+
+	var report = this;
+
+	if( report.query.chart ) {
+		report.resultsChart( args, function( err, chartResults ){
+			if ( err ) {
+				callback( err, null )
+			} else {
+				report.resultsRows( args, function( err, results ) {
+					if( results )
+						results.chart = chartResults
+
+					callback( err, results )
+				} )
+			}
+		} )
+	} else {
+		report.resultsRows( args, callback )
+	}
+
 
 }
 
@@ -129,9 +196,21 @@ reports.push(
 		title: 'Recruit Transactions',
 		query: {
 			count: 'SELECT COUNT(distinct src_transaction_id) FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3',
-			sql: 'SELECT name, to_char( MAX(transaction_items.src_created_at), \'MM/DD/YYYY\') src_created_at, src_order_label, ROUND(SUM(total) / 100.0, 2)::money total FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3 GROUP BY channel_partners.id, transaction_items.src_transaction_id',
+			sql: 'SELECT name, to_char( MAX(transaction_items.src_created_at), \'MM/DD/YYYY\') src_created_at, MAX(src_order_label) src_order_label, ROUND(SUM(total) / 100.0, 2)::money total FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3 GROUP BY channel_partners.id, transaction_items.src_transaction_id',
+			chart: 'SELECT name as row_label, to_char( MAX(transaction_items.src_created_at), \'MM/DD/YYYY\') as col_label, ROUND(SUM(total) / 100.0, 2)::money as "value" FROM channel_partners INNER JOIN transaction_items ON transaction_items.channel_partner_id = channel_partners.id WHERE parent_id = $1 AND transaction_items.src_created_at >= $2 AND date_trunc(\'day\', transaction_items.src_created_at) <= $3 GROUP BY channel_partners.id, to_char( transaction_items.src_created_at, \'MM/DD/YYYY\')',
 			params: [ 'channelPartnerId','transaction_items.src_created_at[min]', 'transaction_items.src_created_at[max]' ],
 			defaults: {  }
+		},
+		chart: {
+			type: 'line',
+			options: {
+				title: {
+					display: false
+				},
+	            legend: {
+	                position: 'bottom'
+	            }
+			}
 		},
 		cols: [
 			{ field: 'name', header: 'Recruit', sortable: false },

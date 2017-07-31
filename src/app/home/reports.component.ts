@@ -18,6 +18,7 @@ export class ReportsComponent implements OnInit {
 	rowsPerPage: Number = 20
 	chartType: String = null
 	chartData: any = null
+	chartOptions: any = null
 
     constructor( private route: ActivatedRoute, private reportsService : ReportsService ) {
     }
@@ -30,6 +31,7 @@ export class ReportsComponent implements OnInit {
 					  this.report = report
 					  this.rows = []
 					  this.chartType = null
+					  this.chartOptions = null
 					  this.chartData = null
 					  this.cols = report.cols
 
@@ -39,8 +41,9 @@ export class ReportsComponent implements OnInit {
 						  this.rows = results.rows
 
 						  if ( results.chart ) {
-	  						  this.chartType = results.chart['type']
-	  						  this.chartData = results.chart['data']
+	  						  this.chartType 	= results.chart['type']
+	  						  this.chartOptions = results.chart['options']
+	  						  this.chartData 	= results.chart['data']
 						  }
 
 					  })
