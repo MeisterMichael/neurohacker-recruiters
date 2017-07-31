@@ -44,7 +44,8 @@ Report.prototype.resultsChart = function( args = {}, callback ) {
 					label: label,
 					data: datasets[label],
 					borderColor: chartBorderColors.pop(),
-					backgroundColor: chartBackgroundColors.pop()
+					backgroundColor: chartBackgroundColors.pop(),
+					fill: results.type != 'line'
 				})
 			})
 
