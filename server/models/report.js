@@ -23,7 +23,7 @@ Report.prototype.resultsChart = function( args = {}, callback ) {
 			console.log('resultsChart', err, this.query.chart, [])
 			callback( err, undefined )
 		} else {
-			var results = Object.assign( { data: { labels: [], datasets: [] } }, this.chart );
+			var results = Object.assign( { data: { labels: [], datasets: [] } }, (this.chart || { type: 'line' }) );
 
 			var datasets = {}
 
