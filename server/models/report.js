@@ -18,6 +18,8 @@ Report.prototype.resultsChart = function( args = {}, callback ) {
 	})
 
 	db.query(this.query.chart, values, (err, res) => {
+		var chartBorderColors = ['#565656', '#4bc0c0','#FFCE56', '#9CCC65', '#FF6384', '#E7E9ED', '#42A5F5'];
+		var chartBackgroundColors = ['#565656', '#4bc0c0','#FFCE56', '#7CB342', '#FF6384', '#E7E9ED', '#1E88E5'];
 
 		if ( err ) {
 			console.log('resultsChart', err, this.query.chart, [])
@@ -40,7 +42,9 @@ Report.prototype.resultsChart = function( args = {}, callback ) {
 			Object.keys(datasets).forEach(function(label){
 				results.data.datasets.push({
 					label: label,
-					data: datasets[label]
+					data: datasets[label],
+					borderColor: chartBorderColors.pop(),
+					backgroundColor: chartBackgroundColors.pop()
 				})
 			})
 
